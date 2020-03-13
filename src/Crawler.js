@@ -40,7 +40,7 @@ class Crawler {
               .text()
               .toLowerCase();
             column_names.push(this.removeLineBreak(column_name));
-            console.log('Crawler -> getItems -> attr -> ', column_name);
+            //console.log('Crawler -> getItems -> attr -> ', column_name);
           });
         } else {
           children.each((i, child) => {
@@ -55,7 +55,25 @@ class Crawler {
             } else if (column_name === 'name') {
               item[column_name] = this.removeLineBreak(text);
             } else if (column_name === 'description') {
-              item[column_name] = this.removeLineBreak(text);
+              let list_li = [];
+
+              const desc = $(child).children()[0]
+                ? $(child).children()[0].prev.data
+                : '';
+              const li = $(child).find('ul li');
+              const quote = $(child)
+                .find('p')
+                .text();
+
+              li.each((i, desc) => {
+                const desc_text = this.removeLineBreak($(desc).text());
+                list_li.push(desc_text);
+              });
+              item[column_name] = {
+                desc: this.removeLineBreak(desc),
+                bullets: list_li,
+                quote: this.removeLineBreak(quote),
+              };
             } else if (column_name === 'durability') {
               item[column_name] = this.removeLineBreak(text);
             } else if (column_name === 'rarity') {
@@ -69,7 +87,9 @@ class Crawler {
       }
     });
     // console.log('Crawler -> getItems -> column_names', column_names);
-     console.log('Crawler -> getItems -> list', list);
+    // console.log('Crawler -> getItems -> list', list);
+    const json = JSON.stringify(list);
+    console.dir(list);
   }
 }
 
