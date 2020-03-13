@@ -15,21 +15,36 @@ class Crawler {
   async getItems() {
     const { data } = await axios.get(`${BASE_URL}/items`);
     const $ = cheerio.load(data);
-    const rows = $('.wikitable tbody > tr');
 
+    const trs = $('.wikitable tbody > tr');
     let count = 0;
-    const tds = $('.wikitable tbody > tr td');
-    tds.each((i, el) => {
-      count += 1;
-      const td_info = el;
+    let column_names = [];
+    let list = []
 
-      if (td_info.attribs.col_span !== '5') {
-        if (count === 1)
-          console.log('Crawler -> getItems -> td_info', td_info.children.text);
+    trs.each((i, el) => {
+      count += 1;
+
+      const children = $(el).children();
+      const qtt_columns = children.length;
+      let attr = {}
+      if (qtt_columns === 5) {
+        if (count === 1) {
+          children.each((i, el) => {
+            const column_name = $(el).text().toLowerCase();
+            column_names.push(column_name);
+            console.log('Crawler -> getItems -> ', column_name);
+          });
+        }else {
+          children.each((i, el) => {
+            const value = $(el).text();
+             attr[column_names[i]] = value;
+          });
+          list.push(attr);
+        }
       }
     });
-
-    // console.log(td_info);
+    console.log('Crawler -> getItems -> column_names', column_names);
+    console.log('Crawler -> getItems -> list', list);
   }
 }
 
