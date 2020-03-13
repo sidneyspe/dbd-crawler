@@ -31,7 +31,7 @@ class Crawler {
     trs.each((row, el) => {
       const children = $(el).children();
       const qtt_columns = children.length;
-      let attr = {};
+      let item = {};
 
       if (qtt_columns === 5) {
         if (row === FIRST_ROW) {
@@ -39,7 +39,7 @@ class Crawler {
             column_name = $(child)
               .text()
               .toLowerCase();
-            column_names.push(column_name);
+            column_names.push(this.removeLineBreak(column_name));
             console.log('Crawler -> getItems -> attr -> ', column_name);
           });
         } else {
@@ -51,19 +51,25 @@ class Crawler {
               const img_url = $(child)
                 .find('img')
                 .attr('src');
-              attr[column_name] = img_url ? img_url : '';
+              item[column_name] = img_url ? img_url : '';
             } else if (column_name === 'name') {
-              attr[column_name] = this.removeLineBreak(text);
+              item[column_name] = this.removeLineBreak(text);
+            } else if (column_name === 'description') {
+              item[column_name] = this.removeLineBreak(text);
+            } else if (column_name === 'durability') {
+              item[column_name] = this.removeLineBreak(text);
+            } else if (column_name === 'rarity') {
+              item[column_name] = this.removeLineBreak(text);
             } else {
-              attr[column_name] = text;
+              item[column_name] = text;
             }
           });
-          list.push(attr);
+          list.push(item);
         }
       }
     });
     // console.log('Crawler -> getItems -> column_names', column_names);
-    // console.log('Crawler -> getItems -> list', list);
+     console.log('Crawler -> getItems -> list', list);
   }
 }
 
