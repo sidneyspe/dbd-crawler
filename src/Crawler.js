@@ -24,14 +24,14 @@ class Crawler {
     const $ = cheerio.load(data);
 
     let column_name = '';
-    let column_names = [];
-    let list = [];
+    const column_names = [];
+    const list = [];
 
     const trs = $('.wikitable tbody > tr');
     trs.each((row, el) => {
       const children = $(el).children();
       const qtt_columns = children.length;
-      let item = {};
+      const item = {};
 
       if (qtt_columns === 5) {
         if (row === FIRST_ROW) {
@@ -40,7 +40,7 @@ class Crawler {
               .text()
               .toLowerCase();
             column_names.push(this.removeLineBreak(column_name));
-            //console.log('Crawler -> getItems -> attr -> ', column_name);
+            // console.log('Crawler -> getItems -> attr -> ', column_name);
           });
         } else {
           children.each((i, child) => {
@@ -51,11 +51,11 @@ class Crawler {
               const img_url = $(child)
                 .find('img')
                 .attr('src');
-              item[column_name] = img_url ? img_url : '';
+              item[column_name] = img_url || '';
             } else if (column_name === 'name') {
               item[column_name] = this.removeLineBreak(text);
             } else if (column_name === 'description') {
-              let list_li = [];
+              const list_li = [];
 
               const desc = $(child).children()[0]
                 ? $(child).children()[0].prev.data
@@ -69,11 +69,9 @@ class Crawler {
                 const desc_text = this.removeLineBreak($(desc).text());
                 list_li.push(desc_text);
               });
-              item[column_name] = {
-                desc: this.removeLineBreak(desc),
-                bullets: list_li,
-                quote: this.removeLineBreak(quote),
-              };
+              item[column_name] = this.removeLineBreak(desc);
+              item.quote = this.removeLineBreak(quote);
+              item.advantages = list_li;
             } else if (column_name === 'durability') {
               item[column_name] = this.removeLineBreak(text);
             } else if (column_name === 'rarity') {
